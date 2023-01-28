@@ -1,4 +1,4 @@
-When you clone the repo
+#When you clone the repo
 
 1) Create a virtual environment 
     > python3 -m venv venv
