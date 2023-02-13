@@ -1,8 +1,9 @@
-from flask import Flask, jsonify
-from blueprints.books import books_bp
+from flask import Flask, jsonify, render_template
+# from blueprints.books import books_bp
 from config.app_config import APP_CONFIG
 from config.db import db
-from config.ma import ma
+# from config.ma import ma
+# from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import HTTPException
 from http.client import BAD_REQUEST, INTERNAL_SERVER_ERROR
 from dotenv import load_dotenv
@@ -11,11 +12,14 @@ from models.book import Book
 app = Flask(__name__)
 app.config.from_mapping(APP_CONFIG)
 
-ma.init_app(app)
+# ma.init_app(apsp)
 db.init_app(app)
 
-app.register_blueprint(books_bp)
+# app.register_blueprint(books_bp)
 
+@app.route("/books")
+def books():
+    return render_template("view.html", values= Book.query.all())
 
 @app.errorhandler(Exception)
 def default_error(e):
@@ -53,6 +57,7 @@ def seed_db():
 
 
 if __name__ == "__main__":
-    init_db()
-    seed_db()
-    app.run(port=app.config["PORT"])
+    # init_db()
+    # seed_db()
+    app.run(debug=True)
+    # app.run(port=app.config["PORT"])
