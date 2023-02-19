@@ -3,12 +3,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-APP_CONFIG = {
-    "PORT": os.getenv("PORT"),
-    "DEBUG": os.getenv("DEBUG"),
-    "TESTING": os.getenv("TESTING"),
-    "FLASK_ENV": os.getenv("FLASK_ENV"),
-    "FLASK_APP": os.getenv("FLASK_APP"),
-    "SQLALCHEMY_TRACK_MODIFICATIONS": os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS"),
-    "SQLALCHEMY_DATABASE_URI": os.getenv("SQLALCHEMY_DATABASE_URI"),
-}
+APP_CONFIG = {}
+
+keys = [
+    "FLASK_RUN_PORT",
+    "FLASK_APP",
+    "FLASK_DEBUG",
+    "SECRET_KEY",
+    "SQLALCHEMY_TRACK_MODIFICATIONS",
+    "SQLALCHEMY_DATABASE_URI",
+]
+
+
+for key in keys:
+    val = os.getenv(key)
+    if val is None:
+        raise ValueError(f"Missing environment variable: {key}")
+    APP_CONFIG[key] = val
