@@ -4,9 +4,7 @@ from config.ma import ma
 
 class Genre(db.Model):
     name = db.Column(db.String, primary_key=True)
-    books = db.relationship(
-        "Book", back_populates="genre", cascade="all, delete, delete-orphan"
-    )
+    books = db.relationship("Book", back_populates="genre")
 
 
 class GenreSchema(ma.SQLAlchemyAutoSchema):
