@@ -63,9 +63,9 @@ def update_publisher_discount(publisher_name, discount_percent):
 
     # Update the price of each book by the given discount percent
     for book in books:
-        original_price = book.price
+        original_price = round(book.price, 2)
         discounted_price = original_price * (1 - discount_percent/100)
-        book.price = discounted_price
+        book.price = round(discounted_price, 2)
 
     # Commit the changes to the database
     db.session.commit()
