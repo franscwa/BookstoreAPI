@@ -20,13 +20,12 @@ def get_books():
 
 
 
-#@books_bp.get("/<book_id>")
-#def get_book(book_id):
-#    book = Book.query.get(book_id)
-#    if book is None:
-#        raise NotFound(f"Book [book_id={book_id}] not found.")
-#    return book_schema.jsonify(book), OK
-
+@books_bp.get("/<book_id>")
+def get_book(book_id):
+    book = Book.query.get(book_id)
+    if book is None:
+        raise NotFound(f"Book [book_id={book_id}] not found.")
+    return book_schema.jsonify(book), OK
 
 
 @books_bp.get("/rating/<int:rating>")
