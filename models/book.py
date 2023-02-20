@@ -7,6 +7,10 @@ class Book(db.Model):
     title = db.Column(db.String(100), unique=True, nullable=False)
     description = db.Column(db.String(200), nullable=False)
     price = db.Column(db.Float, nullable=False)
+    genre = db.Column(db.String, nullable=False)
+    quantity_sold = db.Column(db.Integer, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    publisher = db.Column(db.String(100), nullable=False)
 
     def validate(self):
         assert self.title and len(self.title) > 0, "non-empty book title is required"

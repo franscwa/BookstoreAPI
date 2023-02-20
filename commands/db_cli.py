@@ -27,26 +27,46 @@ def seed():
         title="The Hobbit",
         description="A great book",
         price=10.99,
+        genre = "Fantasy Fiction",
+        quantity_sold = 1000,
+        rating = 5,
+        publisher = "George Allen & Unwin",
     )
     book2 = Book(
         title="The Silmarillion",
         description="A great book",
         price=11.99,
+        genre = "Fantasy Fiction",
+        quantity_sold = 999,
+        rating = 4,
+        publisher = "George Allen & Unwin",
     )
     book3 = Book(
         title="The Fellowship of the Ring",
         description="A great book",
         price=12.99,
+        genre = "Fantasy Fiction",
+        quantity_sold = 888,
+        rating = 3,
+        publisher = "George Allen & Unwin",
     )
     book4 = Book(
         title="The Two Towers",
         description="A great book",
         price=13.99,
+        genre = "Fantasy Fiction",
+        quantity_sold = 777,
+        rating = 2,
+        publisher = "George Allen & Unwin",
     )
     book5 = Book(
         title="The Return of the King",
         description="A great book",
         price=15.99,
+        genre = "Fantasy Fiction",
+        quantity_sold = 888,
+        rating = 1,
+        publisher = "George Allen & Unwin",
     )
     books = [book1, book2, book3, book4, book5]
     db.session.add_all(books)
