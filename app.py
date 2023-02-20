@@ -2,18 +2,20 @@ from flask import Flask, jsonify
 from config.app_config import APP_CONFIG
 from config.db import db
 from config.ma import ma
-from blueprints.books import books_bp
+from blueprints.books_bp import books_bp
+from blueprints.authors_bp import authors_bp
 from commands.db_cli import db_cli
 from werkzeug.exceptions import HTTPException
 from http.client import BAD_REQUEST, INTERNAL_SERVER_ERROR
 
-app = Flask(__name__)
+app = Flask(import_name=__name__, static_folder=None)
 app.config.from_mapping(APP_CONFIG)
 
 ma.init_app(app)
 db.init_app(app)
 
 app.register_blueprint(books_bp)
+app.register_blueprint(authors_bp)
 
 app.cli.add_command(db_cli)
 
