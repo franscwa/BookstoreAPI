@@ -62,7 +62,7 @@ def update_publisher_discount(publisher_name, discount_percent):
 
     # Update the price of each book by the given discount percent
     for book in books:
-        original_price = round(book.price, 2)
+        original_price = book.price
         discounted_price = original_price * (1 - discount_percent/100)
         book.price = round(discounted_price, 2)
 
@@ -71,7 +71,7 @@ def update_publisher_discount(publisher_name, discount_percent):
 
     # Create a list of dictionaries with the original and discounted prices for each book
     price_changes = [
-        {"title": book.title, "original_price": original_price, "discount_price": book.price}
+        {"discount_percent": discount_percent, "title": book.title, "original_price": round(original_price, 2), "discounted_price": book.price}
         for book, original_price in zip(books, [b.price/(1-discount_percent/100) for b in books])
     ]
     # Return the list of price changes as a JSON response
