@@ -9,9 +9,9 @@ class Book(db.Model):
     price = db.Column(db.Float, nullable=False)
     publisher = db.Column(db.String, nullable=False)
     year = db.Column(db.Integer, nullable=False)
-    copies_sold = db.Column(db.Integer, nullable=False)
+    copies_sold = db.Column(db.Integer, nullable=False, default=0)
 
-    genre_name = db.Column(db.String, db.ForeignKey("genre.name"), nullable=False)
+    genre_name = db.Column(db.String, db.ForeignKey("genre.name"))
     genre = db.relationship("Genre", back_populates="books")
 
     author_id = db.Column(db.Integer, db.ForeignKey("author.author_id"), nullable=False)
@@ -34,12 +34,9 @@ class Book(db.Model):
         assert (
             self.year is not None and self.year > 0
         ), "book year must be greater than zero"
-        assert (
+        assert self.copies_sold is None or (
             self.copies_sold is not None and self.copies_sold >= 0
         ), "book copies sold must be greater than or equal to zero"
-        assert (
-            self.genre_name is not None and len(self.genre_name) > 0
-        ), "non-empty book genre name is required"
         assert (
             self.author_id is not None and self.author_id > 0
         ), "book author id must be greater than zero"
