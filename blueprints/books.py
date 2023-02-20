@@ -1,113 +1,56 @@
-from flask import Blueprint, request
-from werkzeug.exceptions import NotFound
-from models.book import Book, BookSchema
-from http.client import OK, CREATED, NO_CONTENT, BAD_REQUEST
 from config.db import db
-from sqlalchemy import desc, select
+from config.ma import ma
 
 
-books_bp = Blueprint(name="books", import_name=__name__, url_prefix="/api/v1/books")
+class Book(db.Model):
+    isbn = db.Column(db.String(13), primary_key=True)
+    title = db.Column(db.String, unique=True, nullable=False)
+    description = db.Column(db.String, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    publisher = db.Column(db.String, nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    copies_sold = db.Column(db.Integer, nullable=False, default=0)
+
+    genre_name = db.Column(db.String, db.ForeignKey("genre.name"))
+    genre = db.relationship("Genre", back_populates="books")
+
+    author_id = db.Column(db.Integer, db.ForeignKey("author.author_id"), nullable=False)
+    author = db.relationship("Author", back_populates="books")
+
+    def validate(self):
+        assert self.isbn is not None and len(self.isbn) == 13, "isbn must be 13 digits"
+        assert (
+            self.title is not None and len(self.title) > 0
+        ), "non-empty book title is required"
+        assert (
+            self.description is not None and len(self.description) > 0
+        ), "non-empty book description is required"
+        assert (
+            self.price is not None and self.price > 0
+        ), "book price must be greater than zero"
+        assert (
+            self.publisher is not None and len(self.publisher) > 0
+        ), "non-empty book publisher is required"
+        assert (
+            self.year is not None and self.year > 0
+        ), "book year must be greater than zero"
+        assert self.copies_sold is None or (
+            self.copies_sold is not None and self.copies_sold >= 0
+        ), "book copies sold must be greater than or equal to zero"
+        assert (
+            self.author_id is not None and self.author_id > 0
+        ), "book author id must be greater than zero"
+
+
+class BookSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Book
+        load_instance = True
+        include_fk = True
+        dump_only = ("book_id",)
+        exclude = ("genre", "author")
+        sqla_session = db.session
 
 
 book_schema = BookSchema()
 books_schema = BookSchema(many=True)
-
-
-@books_bp.get("")
-def get_books():
-    all_books = Book.query.all()
-    return books_schema.jsonify(all_books)
-
-
-
-@books_bp.get("/<book_id>")
-def get_book(book_id):
-    book = Book.query.get(book_id)
-    if book is None:
-        raise NotFound(f"Book [book_id={book_id}] not found.")
-    return book_schema.jsonify(book), OK
-
-
-@books_bp.get("/rating/<int:rating>")
-def get_books_by_rating(rating):
-    # Retrieve all books with a rating greater than or equal to the given rating
-    books = Book.query.filter(Book.rating >= rating).all()
-    # Return the books as a JSON response
-    return books_schema.jsonify(books)
-
-
-@books_bp.get("/top-sellers")
-def get_top_sellers():
-    # Select the top 10 books with the most sales
-    top_books_query = select(
-        Book, db.func.sum(Book.quantity_sold).label("total_sales")
-    ).group_by(Book).order_by(desc("total_sales")).limit(10)
-    top_books = [row[0] for row in db.session.execute(top_books_query)]
-
-    return books_schema.jsonify(top_books)
-
-
-@books_bp.get("/genre/<genre_name>")
-def get_books_by_genre(genre_name):
-    # Retrieve all books with the given genre
-    books = Book.query.filter(Book.genre == genre_name).all()
-
-    # Return the books as a JSON response
-    return books_schema.jsonify(books)
-
-@books_bp.put("/publisher-discount/<publisher_name>/<float:discount_percent>")
-def update_publisher_discount(publisher_name, discount_percent):
-    # Retrieve all books under the given publisher
-    books = Book.query.filter(Book.publisher == publisher_name).all()
-
-    # Update the price of each book by the given discount percent
-    for book in books:
-        original_price = book.price
-        discounted_price = original_price * (1 - discount_percent/100)
-        book.price = round(discounted_price, 2)
-
-    # Commit the changes to the database
-    db.session.commit()
-
-    # Create a list of dictionaries with the original and discounted prices for each book
-    price_changes = [
-        {"discount_percent": discount_percent, "title": book.title, "original_price": round(original_price, 2), "discounted_price": book.price}
-        for book, original_price in zip(books, [b.price/(1-discount_percent/100) for b in books])
-    ]
-    # Return the list of price changes as a JSON response
-    return {"price_changes": price_changes}
-
-
-@books_bp.post("")
-def create_book():
-    new_book = book_schema.load(request.json)
-    new_book.validate()
-    db.session.add(new_book)
-    db.session.commit()
-    return book_schema.jsonify(new_book), CREATED
-
-
-@books_bp.put("/<book_id>")
-def update_book(book_id):
-    book = Book.query.get(book_id)
-    if book is None:
-        raise NotFound(f"Book [book_id={book_id}] not found.")
-    updated_book = book_schema.load(request.json)
-    updated_book.validate()
-    book.title, book.description, book.price = (
-        updated_book.title,
-        updated_book.description,
-        updated_book.price,
-    )
-    db.session.commit()
-    return book_schema.jsonify(book), OK
-
-
-@books_bp.delete("/<book_id>")
-def delete_book(book_id):
-    book = Book.query.get(book_id)
-    if book is None:
-        raise NotFound(f"Book [book_id={book_id}] not found.")
-    db.session.delete(book)
-    db.session.commit()
-    return "", NO_CONTENT
