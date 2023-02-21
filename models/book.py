@@ -10,7 +10,7 @@ class Book(db.Model):
     publisher = db.Column(db.String, nullable=False)
     year = db.Column(db.Integer, nullable=False)
     copies_sold = db.Column(db.Integer, nullable=False, default=0)
-
+    rating = db.Column(db.Integer, nullable=True)
     genre_name = db.Column(db.String, db.ForeignKey("genre.name"))
     genre = db.relationship("Genre", back_populates="books")
 

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, abort
 from werkzeug.exceptions import NotFound
 from models.book import Book, book_schema, books_schema
 from models.author import Author
@@ -69,3 +69,11 @@ def update_books_price(publisher, discount):
        for book, original_price in zip(books, [b.price/(1-discount/100) for b in books])
     ]   
     return {"price_changes": price_changes}
+
+@books_bp.get("/rating/<int:rating>")
+def get_books_by_rating(rating):
+    books = Book.query.filter(Book.rating >= rating).all()
+    if not books:
+        abort(404, f"No books found with rating >= {rating}.")
+    
+    return books_schema.jsonify(books), 200
