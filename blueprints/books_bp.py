@@ -87,3 +87,15 @@ def get_books_by_rating(rating):
         abort(404, f"No books found with rating >= {rating}.")
     
     return books_schema.jsonify(books), 200
+
+
+#@books_bp.get("/rating/<int:rating>")
+#def get_books_by_rating(rating):
+#    """
+#    Retrieve books by rating.
+#    """
+#    books = Book.query.join(Rating).filter(Rating.stars >= rating).all()
+#    if not books:
+#        abort(404, f"No books found with rating >= {rating}.")
+    
+#    return books_schema.jsonify(books), 200

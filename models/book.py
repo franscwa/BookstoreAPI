@@ -11,11 +11,15 @@ class Book(db.Model):
     year = db.Column(db.Integer, nullable=False)
     copies_sold = db.Column(db.Integer, nullable=False, default=0)
     rating = db.Column(db.Integer, nullable=True)
+    # New relationship for ratings
+  #  rating = db.relationship("Rating", backref="book", lazy="dynamic")
     genre_name = db.Column(db.String, db.ForeignKey("genre.name"))
     genre = db.relationship("Genre", back_populates="books")
 
     author_id = db.Column(db.Integer, db.ForeignKey("author.author_id"), nullable=False)
     author = db.relationship("Author", back_populates="books")
+
+   
 
     def validate(self):
         assert self.isbn is not None and len(self.isbn) == 13, "isbn must be 13 digits"
