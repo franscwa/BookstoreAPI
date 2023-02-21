@@ -27,7 +27,6 @@ def create_book():
     # return "", CREATED
     return book_schema.jsonify(book), CREATED
 
-
 @books_bp.get("/author/<author_id>")
 def get_books_by_author(author_id):
     author = Author.query.get(author_id)
@@ -35,9 +34,11 @@ def get_books_by_author(author_id):
         raise NotFound(f"Author [author_id={author_id}] not found.")
     return books_schema.jsonify(author.books), OK
 
-
 @books_bp.get("/genre/<genre_name>")
 def get_books_by_genre(genre_name):
+    """
+    Retrieve books by genre.
+    """
     genre_books = Book.query.filter_by(genre_name=genre_name).all()
     if not genre_books:
         raise NotFound(f"No books found for genre {genre_name}.")
@@ -45,6 +46,9 @@ def get_books_by_genre(genre_name):
 
 @books_bp.get("/top-sellers")
 def get_top_selling_books():
+    """
+    Retrieve the top selling books.
+    """
     top_selling_books = Book.query.order_by(Book.copies_sold.desc()).limit(10).all()
     if not top_selling_books:
         raise NotFound("No books found.")
@@ -53,6 +57,9 @@ def get_top_selling_books():
 
 @books_bp.put("/discount/<publisher>/<float:discount>")
 def update_books_price(publisher, discount):
+    """
+    Update the price of books by a publisher.
+    """
     books = Book.query.filter_by(publisher=publisher).all()
     if not books:
         raise NotFound(f"No books found for publisher {publisher}.")
@@ -72,6 +79,9 @@ def update_books_price(publisher, discount):
 
 @books_bp.get("/rating/<int:rating>")
 def get_books_by_rating(rating):
+    """
+    Retrieve books by rating.
+    """
     books = Book.query.filter(Book.rating >= rating).all()
     if not books:
         abort(404, f"No books found with rating >= {rating}.")
