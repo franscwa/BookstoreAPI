@@ -1,24 +1,25 @@
 from flask import Blueprint, request
 from werkzeug.exceptions import NotFound
-from models.book import Book, BookSchema
+from models.rating import Rating, RatingSchema
 from http.client import OK, CREATED, NO_CONTENT, BAD_REQUEST
 from config.db import db
+from book import Book
 
 
-books_bp = Blueprint(name="books", import_name=__name__, url_prefix="/api/v1/books")
+
+ratings_bp = Blueprint(name="ratings", import_name=__name__, url_prefix="/api/v1/books/")
 
 book_schema = BookSchema()
 books_schema = BookSchema(many=True)
 
-//FIX ME
 
 @books_bp.get("")
 def get_books():
-    all_books = Book.query.all()
-    return books_schema.jsonify(all_books)
+    all_ratings = Rating.query.all()
+    return books_schema.jsonify(all_ratings)
 
 
-# @books_bp.get("/<book_id>")
+# @books_bp.get("/<book_id>/ratings")
 # def get_book(book_id):
 #     book = Book.query.get(book_id)
 #     if book is None:

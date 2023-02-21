@@ -2,6 +2,7 @@ import click
 from flask.cli import AppGroup, with_appcontext
 from config.db import db
 from models.book import Book
+# from models.rating import Rating
 
 db_cli = AppGroup(name="db")
 
