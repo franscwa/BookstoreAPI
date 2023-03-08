@@ -3,12 +3,11 @@ from config.ma import ma
 
 
 class Book(db.Model):
-    __tablename__ = 'books'
     book_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), unique=True, nullable=False)
     description = db.Column(db.String(200), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    # children = db.orm.relationship("Rating")
+    # ratings = db.relationship('rating', backref='book', lazy=True)
 
     def validate(self):
         assert self.title and len(self.title) > 0, "non-empty book title is required"
