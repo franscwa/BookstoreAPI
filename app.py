@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-from blueprints.books import books_bp
+from blueprints.books_bp import books_bp
 from config.app_config import APP_CONFIG
 from config.db import db
 from config.ma import ma
