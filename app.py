@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-from config.app_config import APP_CONFIG
+from config.config import load_config
 from config.db import db
 from config.ma import ma
 from commands.db_cli import db_cli
@@ -11,8 +11,8 @@ from blueprints.ratings import ratings_bp
 from blueprints.comments import comments_bp
 from blueprints.admin import admin_bp
 
-app = Flask(__name__)
-app.config.from_mapping(APP_CONFIG)
+app = Flask(import_name=__name__, static_folder=None)
+app.config.from_mapping(load_config())
 
 ma.init_app(app)
 db.init_app(app)
