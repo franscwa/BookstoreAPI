@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-from config.app_config import APP_CONFIG
+from config.config import load_config
 from config.db import db
 from config.ma import ma
 from blueprints.books_bp import books_bp
@@ -9,7 +9,7 @@ from werkzeug.exceptions import HTTPException
 from http.client import BAD_REQUEST, INTERNAL_SERVER_ERROR
 
 app = Flask(import_name=__name__, static_folder=None)
-app.config.from_mapping(APP_CONFIG)
+app.config.from_mapping(load_config())
 
 ma.init_app(app)
 db.init_app(app)
