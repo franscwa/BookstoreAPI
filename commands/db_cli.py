@@ -117,35 +117,35 @@ def update():
     book1.description = "A great book"
     book1.price = 12.99
     book1.copies_sold = 20
-    book1.rating = 0
+    book1.rating = 1
 
     book2 = Book.query.filter_by(isbn="0000000000002").first()
     book2.title = "The Silmarillion"
     book2.description = "A great book (Updated)"
     book2.price = 13.99
     book2.copies_sold = 25
-    book2.rating = 0
+    book2.rating = 2
 
     book3 = Book.query.filter_by(isbn="0000000000003").first()
     book3.title = "The Fellowship of the Ring"
     book3.description = "A great book"
     book3.price = 14.99
     book3.copies_sold = 30
-    book3.rating = 0
+    book3.rating = 3
 
     book4 = Book.query.filter_by(isbn="0000000000004").first()
     book4.title = "The Two Towers"
     book4.description = "A great book"
     book4.price = 15.99
     book4.copies_sold = 35
-    book4.rating = 0
+    book4.rating = 4
 
     book5 = Book.query.filter_by(isbn="0000000000005").first()
     book5.title = "The Return of the King"
     book5.description = "A great book"
     book5.price = 16.99
     book5.copies_sold = 40
-    book5.rating = 0
+    book5.rating = 5
 
     db.session.commit()
     print("db updated")
