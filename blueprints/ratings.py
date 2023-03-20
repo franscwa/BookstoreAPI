@@ -7,8 +7,6 @@ from models.book import Book, BookSchema
 from datetime import datetime
 
 
-# cur = conn.cursor()
-
 ratings_bp = Blueprint(name="ratings", import_name=__name__, url_prefix="/api/v1/book")
 rating_schema = RatingSchema()
 ratings_schema = RatingSchema(many=True)
@@ -41,7 +39,7 @@ def create_rating(book_id):
     db.session.add(new_rating)
     db.session.commit()
     return book_schema.jsonify(book)
-    return rating_schema.jsonify(new_rating), CREATED
+    # return rating_schema.jsonify(new_rating), CREATED
 
 
 @ratings_bp.delete("/<book_id>/<rating_id>")
