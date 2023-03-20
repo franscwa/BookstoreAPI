@@ -2,7 +2,6 @@ from flask import Flask, jsonify
 from config.app_config import APP_CONFIG
 from config.db import db
 from config.ma import ma
-from commands.db_cli import db_cli
 from werkzeug.exceptions import HTTPException
 from http.client import BAD_REQUEST, INTERNAL_SERVER_ERROR
 
@@ -21,8 +20,6 @@ app.register_blueprint(books_bp)
 app.register_blueprint(ratings_bp)
 app.register_blueprint(comments_bp)
 app.register_blueprint(admin_bp)
-
-app.cli.add_command(db_cli)
 
 
 @app.errorhandler(Exception)
