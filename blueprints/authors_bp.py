@@ -15,5 +15,4 @@ def create_author():
     author.validate()
     db.session.add(author)
     db.session.commit()
-    # return "", CREATED
-    return author_schema.jsonify(author), CREATED
+    return "", CREATED
