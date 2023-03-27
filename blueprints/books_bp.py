@@ -23,8 +23,7 @@ def create_book():
     book.validate()
     db.session.add(book)
     db.session.commit()
-    # return "", CREATED
-    return book_schema.jsonify(book), CREATED
+    return "", CREATED
 
 
 @books_bp.get("/author/<author_id>")
