@@ -40,6 +40,9 @@ class Book(db.Model):
         assert (
             self.author_id is not None and self.author_id > 0
         ), "book author id must be greater than zero"
+        assert (
+            self.genre_name is not None and len(self.genre_name) > 0
+        ), "non-empty book genre name is required"
 
 
 class BookSchema(ma.SQLAlchemyAutoSchema):

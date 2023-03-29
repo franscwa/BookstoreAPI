@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from config.db import db
 from models.author import author_schema
-from http.client import CREATED
+from http import HTTPStatus
 
 
 authors_bp = Blueprint(
@@ -15,4 +15,4 @@ def create_author():
     author.validate()
     db.session.add(author)
     db.session.commit()
-    return "", CREATED
+    return "", HTTPStatus.CREATED
