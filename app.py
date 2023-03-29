@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 app.app_context().push()
 
-app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:password@localhost/bookstore'
+app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:password@localhost/temp'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
@@ -387,6 +387,22 @@ def add_a_wishlist_book(userid, wishlistid, bookid):
     ), 200
 
 
+
+
+
+@app.route('/user/<int:userid>/wishlist/<int:wishlistid>/book/<int:bookid>', methods = ['DELETE'])
+
+def delete_wishlist_book(userid, wishlistid, bookid):
+    
+    userid = User.get_user(userid)
+    
+    wishlistid = Wishlist.get_wishlist(wishlistid)
+    
+    bookid = Book.get_book(bookid)
+    
+    bookid.delete()
+
+    return jsonify({"message":"Deleted"}), 204
 
 
 
