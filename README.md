@@ -17,9 +17,23 @@
     ```
     touch .env
     ```
-5.  Start app
+5.  Run tests
+    ```
+    python3 -m pytest -v
+    ```
+6.  Run app commands
+    ```
+    flask db migrate
+    flask db seed
+    flask db drop
+    ```
+7.  Start app only
     ```
     python3 app.py
+    ```
+7.  Start app and postgres in docker
+    ```
+    docker compose up
     ```
 
 ## Tutorial
