@@ -14,7 +14,9 @@ class Rating(db.Model):
 
     def validate(self):
         assert 0 < int(self.isbn) < 9999999999, "non-empty book title is required"
-        assert int(self.rating) and 0 <= int(self.rating) <= 5, "non-empty book description is required"
+        assert (
+            int(self.rating) and 0 <= int(self.rating) <= 5
+        ), "non-empty book description is required"
 
 
 class RatingSchema(ma.SQLAlchemyAutoSchema):
@@ -23,6 +25,7 @@ class RatingSchema(ma.SQLAlchemyAutoSchema):
         dump_only = ("rating_id",)
         exclude = ("book",)
         load_instance = True
+
 
 rating_schema = RatingSchema()
 ratings_schema = RatingSchema(many=True)

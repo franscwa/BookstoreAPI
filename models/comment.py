@@ -15,7 +15,9 @@ class Comment(db.Model):
 
     def validate(self):
         assert 0 < int(self.isbn) < 9999999999, "non-empty book title is required"
-        assert self.comment and 0 < len(self.comment) <= MAX_COMMENT, "non-empty comment < 250 characters is required"
+        assert (
+            self.comment and 0 < len(self.comment) <= MAX_COMMENT
+        ), "non-empty comment < 250 characters is required"
 
 
 class CommentSchema(ma.SQLAlchemyAutoSchema):

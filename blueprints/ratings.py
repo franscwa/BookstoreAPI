@@ -6,7 +6,6 @@ from config.db import db
 from models.book import Book, book_schema, books_schema
 from datetime import datetime
 
-
 ratings_bp = Blueprint(name="ratings", import_name=__name__, url_prefix="/api/v1/book")
 
 
@@ -39,8 +38,8 @@ def get_avg_rating(isbn):
         count += 1
         sum += r.rating
     avg = sum / count
-    print(sum, count, round(avg,2))
-    book.avg_rating = round(avg,2)
+    print(sum, count, round(avg, 2))
+    book.avg_rating = round(avg, 2)
     # return jsonify(average=f"{avg:.2}")
     # return ratings_schema.jsonify(rating_query)
     return book_schema.jsonify(book)
@@ -52,7 +51,13 @@ def create_rating(isbn):
     if sBook is None:
         raise NotFound(f"Book [book={isbn}] not found.")
     res = request.json
-    new_rating = Rating(rating=res["rating"], isbn=isbn, book=sBook, user_id=res["user_id"], timestamp=datetime.now())
+    new_rating = Rating(
+        rating=res["rating"],
+        isbn=isbn,
+        book=sBook,
+        user_id=res["user_id"],
+        timestamp=datetime.now(),
+    )
     new_rating.validate()
     db.session.add(new_rating)
     db.session.commit()
@@ -69,6 +74,3 @@ def delete_rating(isbn, rating_id):
     db.session.commit()
     rating_query = Rating.query.filter(Rating.isbn == isbn)
     return ratings_schema.jsonify(rating_query)
-
-
-
