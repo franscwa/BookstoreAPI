@@ -1,18 +1,17 @@
 import pytest
 from app import create_app
-from config.config import load_config
 
 
 @pytest.fixture(scope="session")
 def app():
-    config = load_config()
-    config.update(
+    app = create_app()
+    app.config.update(
         {
             "TESTING": True,
             "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         }
     )
-    app = create_app(config)
+    app = create_app()
     app.test_cli_runner().invoke(args=["db", "migrate"])
     app.test_cli_runner().invoke(args=["db", "seed"])
     return app

@@ -6,8 +6,9 @@ from models.book import Book, book_schema, books_schema
 from models.comment import Comment, comment_schema, comments_schema
 from datetime import datetime
 
-
-comments_bp = Blueprint(name="comments", import_name=__name__, url_prefix="/api/v1/book")
+comments_bp = Blueprint(
+    name="comments", import_name=__name__, url_prefix="/api/v1/book"
+)
 
 
 @comments_bp.get("/comments")
@@ -32,12 +33,14 @@ def create_comment(isbn):
     if book is None:
         raise NotFound(f"Book [isbn={isbn}] not found.")
     res = request.json
-    new_comment = Comment(comment=res["comment"], book=book, isbn=isbn, user_id=res["user_id"],timestamp=datetime.now())
+    new_comment = Comment(
+        comment=res["comment"],
+        book=book,
+        isbn=isbn,
+        user_id=res["user_id"],
+        timestamp=datetime.now(),
+    )
     new_comment.validate()
     db.session.add(new_comment)
     db.session.commit()
     return comment_schema.jsonify(new_comment), CREATED
-
-
-
-

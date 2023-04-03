@@ -3,33 +3,34 @@ from config.config import load_config
 from config.db import db
 from config.ma import ma
 from marshmallow.exceptions import ValidationError
-from blueprints.books import books_bp
+from blueprints.admin import admin_bp
 from blueprints.authors import authors_bp
+from blueprints.books import books_bp
 from blueprints.ratings import ratings_bp
 from blueprints.comments import comments_bp
-from blueprints.admin import admin_bp
 from commands.db_cli import db_cli
 from werkzeug.exceptions import HTTPException
 from http import HTTPStatus
 
 
-def create_app(cfg):
-    a = Flask(import_name=__name__, static_folder=None)
-    a.config.from_mapping(cfg)
+def create_app():
+    app = Flask(import_name=__name__, static_folder=None)
 
-    ma.init_app(a)
-    db.init_app(a)
+    config = load_config()
+    app.config.from_mapping(config)
 
-    a.register_blueprint(books_bp)
-    a.register_blueprint(authors_bp)
-	app.register_blueprint(books_bp)
-	app.register_blueprint(ratings_bp)
-	app.register_blueprint(comments_bp)
-	app.register_blueprint(admin_bp)
+    ma.init_app(app)
+    db.init_app(app)
 
-    a.cli.add_command(db_cli)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(authors_bp)
+    app.register_blueprint(books_bp)
+    app.register_blueprint(ratings_bp)
+    app.register_blueprint(comments_bp)
 
-    @a.errorhandler(Exception)
+    app.cli.add_command(db_cli)
+
+    @app.errorhandler(Exception)
     def default_error(e):
         if isinstance(e, HTTPException):
             return jsonify(error=e.description), e.code
@@ -38,10 +39,9 @@ def create_app(cfg):
         else:
             return jsonify(error=str(e)), HTTPStatus.INTERNAL_SERVER_ERROR
 
-    return a
+    return app
 
 
 if __name__ == "__main__":
-    config = load_config()
-    app = create_app(config)
+    app = create_app()
     app.run(host="0.0.0.0", port=app.config["FLASK_RUN_PORT"])

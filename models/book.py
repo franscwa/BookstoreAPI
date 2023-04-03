@@ -17,6 +17,10 @@ class Book(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey("author.author_id"), nullable=False)
     author = db.relationship("Author", back_populates="books")
 
+    ratings = db.relationship("Rating", back_populates="book")
+
+    comments = db.relationship("Comment", back_populates="book")
+
     def validate(self):
         assert self.isbn is not None and len(self.isbn) == 13, "isbn must be 13 digits"
         assert (
@@ -51,7 +55,7 @@ class BookSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         include_fk = True
         dump_only = ("book_id",)
-        exclude = ("genre", "author")
+        exclude = ("genre", "author", "ratings", "comments")
         sqla_session = db.session
 
 
