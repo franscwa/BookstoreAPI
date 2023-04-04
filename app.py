@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, json, render_template
+from flask import Flask, request, jsonify, json
 from flask_sqlalchemy import SQLAlchemy 
 from sqlalchemy import Column, String, Integer, Float
 from flask_marshmallow import Marshmallow
@@ -68,7 +68,8 @@ class UserSchema(Schema):
     
     
     
-wishlist_book = db.Table('wishlist_book',
+    
+wishlist_books = db.Table('wishlist_books',
     db.Column('wishlistid', db.Integer, db.ForeignKey('wishlist.wishlistid'), primary_key = True) ,
     db.Column('bookid', db.Integer, db.ForeignKey('book.bookid'), primary_key = True)                    
 )    
@@ -80,10 +81,11 @@ wishlist_book = db.Table('wishlist_book',
 class Wishlist(db.Model):
     wishlistid = db.Column(db.Integer(), primary_key = True)
     wishlistname = db.Column(db.String(50), nullable = False, unique = False)
+    #wishlistbooksss = db.Column(db.List(), unique = False)
     
     user_id = db.Column(db.Integer, db.ForeignKey('user.userid'), nullable = False)
         
-    wishlistbooks = db.relationship('Book', secondary = wishlist_book) 
+    wishlistbooks = db.relationship('Book', secondary = wishlist_books, backref = 'wishlist') #watch for backref
     
 
 
@@ -109,7 +111,10 @@ class Wishlist(db.Model):
     @classmethod
     def get_wishlist(cls, id):
         return cls.query.get_or_404(id)
-        
+    
+    #@classmethod
+    #def get_wishlist_book(cls, wishlistbooks):
+    #     return cls.query.get_or_404(wishlistbooks)       
     
 
     def save(self):
@@ -139,7 +144,7 @@ class Book(db.Model):
     description = db.Column(db.Text(), nullable = False)
     price = db.Column(db.Float(), nullable = False, unique = False)
     
-    wishlistsid = db.Column(db.Integer, db.ForeignKey('wishlist.wishlistid'))
+    wishlistid = db.Column(db.Integer, db.ForeignKey('wishlist.wishlistid'))
             
     
     """ 
@@ -196,7 +201,7 @@ class BookSchema(Schema):
 
 
     
-@app.route('/api/book', methods = ['POST'])
+@app.route('/api/v1/book', methods = ['POST'])
 def create_a_book():
     data = request.get_json()
 
@@ -222,7 +227,7 @@ def create_a_book():
 
 
 
-@app.route('/api/book', methods = ['GET'])
+@app.route('/api/v1/book', methods = ['GET'])
 def get_all_books():
     book = Book.get_all_books()
 
@@ -236,7 +241,7 @@ def get_all_books():
 
 
 
-@app.route('/api/book/<int:bookid>', methods = ['GET'])
+@app.route('/api/v1/book/<int:bookid>', methods = ['GET'])
 def get_book(bookid):
     book = Book.get_book(bookid)
 
@@ -254,7 +259,7 @@ def get_book(bookid):
 
 
 
-@app.route('/api/user', methods = ['POST'])
+@app.route('/api/v1/user', methods = ['POST'])
 def create_user():
     data = request.get_json()
 
@@ -278,7 +283,7 @@ def create_user():
 
 
 
-@app.route('/api/user', methods = ['GET'])
+@app.route('/api/v1/user', methods = ['GET'])
 def get_all_users():
     user = User.get_all_users()
 
@@ -294,7 +299,7 @@ def get_all_users():
 
 
 
-@app.route('/api/user/<int:userid>', methods = ['GET'])
+@app.route('/api/v1/user/<int:userid>', methods = ['GET'])
 def get_user(userid):
     user = User.get_user(userid)
 
@@ -311,7 +316,7 @@ def get_user(userid):
 
 
 
-@app.route('/api/user/<int:userid>', methods = ['PUT'])
+@app.route('/api/v1/user/<int:userid>', methods = ['PUT'])
 def update_user(userid):
     user_to_update = User.get_user(userid)
 
@@ -334,17 +339,17 @@ def update_user(userid):
 
 
 
-@app.route('/api/user/<int:userid>/wishlist', methods = ['POST'])
+@app.route('/api/v1/user/<int:userid>/wishlist', methods = ['POST'])
 def create_a_wishlist(userid):
     
-    user = User.get_user(userid)
-
     data = request.get_json()
 
     new_wishlist = Wishlist(wishlistname = data.get('wishlistname'),
-                       user_id = userid 
+                       user_id = data.get('userid') 
     )
-
+    
+    userid = data.get(userid)
+    
     new_wishlist.save()
 
     serializer = WishlistSchema()
@@ -361,7 +366,7 @@ def create_a_wishlist(userid):
 
 
 
-@app.route('/api/user/<int:userid>/wishlist', methods = ['GET'])
+@app.route('/api/v1/user/<int:userid>/wishlist', methods = ['GET'])
 def get_all_the_wishlists(userid):
     
     userid = User.get_user(userid)
@@ -380,7 +385,7 @@ def get_all_the_wishlists(userid):
 
 
 
-@app.route('/api/user/<int:userid>/wishlist/<int:wishlistid>', methods = ['GET'])
+@app.route('/api/v1/user/<int:userid>/wishlist/<int:wishlistid>', methods = ['GET'])
 def get_a_wishlist(userid, wishlistid):
         
     userid = User.get_user(userid)
@@ -404,17 +409,31 @@ def get_a_wishlist(userid, wishlistid):
 
 
 
-@app.route('/api/user/<int:userid>/wishlist/<int:wishlistid>/book/<int:bookid>', methods = ['POST'])
+@app.route('/api/v1/user/<int:userid>/wishlist/<int:wishlistid>/book', methods = ['POST'])
 
-def add_a_wishlist_book(userid, wishlistid, bookid):
+def add_a_wishlist_book(userid, wishlistid):
     
     userid = User.get_user(userid)
     
     wishlistid = Wishlist.get_wishlist(wishlistid)
     
-    bookid = Book.get_book(bookid)
+    bookdata = request.get_json()
     
-    bookid.save()
+    bookid = bookdata.get('bookid')
+    
+    book = Book.get_book(bookid)
+    
+    wishlistbook = wishlistid.wishlistbooks.append(book)   
+
+    
+    serializer = BookSchema()
+    
+    data = serializer.dump(wishlistbook)
+    
+    #wishlist_books.append(data)
+    
+    
+    #wishlistbook = wishlistid.wishlistbooks
     
     #booktitle = Book.get_book_title()
     
@@ -434,28 +453,37 @@ def add_a_wishlist_book(userid, wishlistid, bookid):
     #data = serializer.dump(wishlistbook)
 
     return jsonify(
-    #    data 
+        print(data)
     ), 200
     
     
     
     
-@app.route('/api/user/<int:userid>/wishlist/<int:wishlistid>/book', methods = ['GET'])
+@app.route('/api/v1/user/<int:userid>/wishlist/<int:wishlistid>/book', methods = ['GET'])
 
 def get_all_wishlist_books(userid, wishlistid):
+    
     
     userid = User.get_user(userid)
     
     wishlistid = Wishlist.get_wishlist(wishlistid)
     
-    wishlistbook = Book.get_all_books()
+    #wishlistbooklist = Wishlist.get_wishlist_book(Wishlist.wishlistbooks)
+        
+
+    wishlistbooks = wishlistid.wishlistbooks   
+    
+    
+    #wishlistbooks = Book.get_all_books()
     
     serializer = BookSchema(many = True)
     
-    data = serializer.dump(wishlistbook)
+    data = serializer.dump(wishlistbooks)
     
     return jsonify(
         data
+        #wishlistbooks
+        #wishlistbooklist
     ), 200
     
     
@@ -491,7 +519,10 @@ def seed_db():
         wishlist1 = Wishlist(wishlistname = "My upcoming favorites.", 
                              user_id = 1, wishlistbooks = [book1, book2])
         
-        wishlists = [wishlist1]
+        wishlist2 = Wishlist(wishlistname = "My List", 
+                             user_id = 2, wishlistbooks = [book3, book5])        
+        
+        wishlists = [wishlist1, wishlist2]
         
         
         db.session.add_all(users)        
@@ -509,4 +540,5 @@ def seed_db():
 if __name__ == '__main__':
     init_db()
     seed_db()
+    #db.session.commit() ?
     app.run(debug = True)
