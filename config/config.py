@@ -19,3 +19,6 @@ def load_config():
             raise ValueError(f"Must set environment variable: {key}")
         config[key] = val
     return config
+
+
+app_config = load_config()

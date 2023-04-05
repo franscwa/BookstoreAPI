@@ -1,8 +1,9 @@
 from flask.cli import AppGroup
 from config.db import db
+from models.author import Author
 from models.book import Book
 from models.genre import Genre
-from models.author import Author
+from models.role import Role, Roles
 
 db_cli = AppGroup(name="db")
 
@@ -24,6 +25,12 @@ def drop():
 @db_cli.command("seed")
 def seed():
     """Seed the database with data."""
+
+    role1 = Role(name=Roles.ADMIN.value)
+    role2 = Role(name=Roles.USER.value)
+    roles = [role1, role2]
+    db.session.add_all(roles)
+    db.session.commit()
 
     genre1 = Genre(name="Fantasy")
     genre2 = Genre(name="Adventure")

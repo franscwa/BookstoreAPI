@@ -1,10 +1,13 @@
 from flask import Blueprint, request
 from werkzeug.exceptions import NotFound, BadRequest
-from models.book import Book, book_schema, books_schema
 from models.author import Author
+from models.book import Book, book_schema, books_schema
 from models.genre import Genre
+from models.role import Roles
 from http import HTTPStatus
 from config.db import db
+from config.authn import jwt_required
+from config.authz import roles_required
 
 books_bp = Blueprint(name="books_bp", import_name=__name__, url_prefix="/api/v1/books")
 
@@ -18,6 +21,8 @@ def get_book(isbn):
 
 
 @books_bp.post("")
+@jwt_required
+@roles_required([Roles.ADMIN])
 def create_book():
     book = book_schema.load(request.json)
     book.validate()
@@ -39,6 +44,7 @@ def get_books_by_author(author_id):
         raise NotFound(f"Author [author_id={author_id}] not found.")
     return books_schema.jsonify(author.books), HTTPStatus.OK
 
+
 @books_bp.get("/genre/<genre_name>")
 def get_books_by_genre(genre_name):
     """
@@ -49,6 +55,7 @@ def get_books_by_genre(genre_name):
         raise NotFound(f"No books found for genre {genre_name}.")
     return books_schema.jsonify(genre_books), HTTPStatus.OK
 
+
 @books_bp.get("/top-sellers")
 def get_top_selling_books():
     """
@@ -58,6 +65,7 @@ def get_top_selling_books():
     if not top_selling_books:
         raise NotFound("No books found.")
     return books_schema.jsonify(top_selling_books), HTTPStatus.OK
+
 
 @books_bp.put("/discount/<publisher>/<float:discount>")
 def update_books_price(publisher, discount):
@@ -70,13 +78,20 @@ def update_books_price(publisher, discount):
 
     for book in books:
         original_price = book.price
-        discounted_price = original_price * (1 - discount/100)
+        discounted_price = original_price * (1 - discount / 100)
         book.price = round(discounted_price, 2)
         db.session.commit()
 
     # Create a list of dictionaries with the original and discounted prices for each book
     price_changes = [
-       {"discount_percent": discount, "book title": book.title, "original_price": round(original_price, 2), "discounted_price": book.price}
-       for book, original_price in zip(books, [b.price/(1-discount/100) for b in books])
-    ]   
+        {
+            "discount_percent": discount,
+            "book title": book.title,
+            "original_price": round(original_price, 2),
+            "discounted_price": book.price,
+        }
+        for book, original_price in zip(
+            books, [b.price / (1 - discount / 100) for b in books]
+        )
+    ]
     return {"price_changes": price_changes}

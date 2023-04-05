@@ -4,6 +4,7 @@ from config.db import db
 from config.ma import ma
 from marshmallow.exceptions import ValidationError
 from blueprints.admin import admin_bp
+from blueprints.auth import auth_bp
 from blueprints.authors import authors_bp
 from blueprints.books import books_bp
 from blueprints.ratings import ratings_bp
@@ -23,6 +24,7 @@ def create_app():
     db.init_app(app)
 
     app.register_blueprint(admin_bp)
+    app.register_blueprint(auth_bp)
     app.register_blueprint(authors_bp)
     app.register_blueprint(books_bp)
     app.register_blueprint(ratings_bp)
