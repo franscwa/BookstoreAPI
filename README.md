@@ -13,27 +13,37 @@
     ```
     pip install -r requirements.txt
     ```
-4.  Create .env file and set environment variables
+4.  Create .**env** file
     ```
     touch .env
     ```
-5.  Run tests
+5.  Set required environment variables in **.env** file
+
     ```
-    python3 -m pytest -v
+    FLASK_RUN_PORT='8080'
+    FLASK_APP='app.py'
+    FLASK_DEBUG='True'
+    SECRET_KEY='some_secret_key'
+    SQLALCHEMY_TRACK_MODIFICATIONS='False'
+    <!-- Use one of the following: -->
+    SQLALCHEMY_DATABASE_URI='sqlite:///db.sqlite' # sqlite
+    SQLALCHEMY_DATABASE_URI='sqlite:///:memory:' # in-memory sqlite
+    SQLALCHEMY_DATABASE_URI='postgresql://postgres:postgres@localhost:5432/bookstore' # postgresql
     ```
-6.  Run app commands
+
+6.  Run tests
+    ```
+    pytest
+    ```
+7.  Run app db commands
     ```
     flask db migrate
     flask db seed
     flask db drop
     ```
-7.  Start app only
+8.  Start app
     ```
     python3 app.py
-    ```
-7.  Start app and postgres in docker
-    ```
-    docker compose up
     ```
 
 ## Tutorial

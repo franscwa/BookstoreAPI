@@ -6,8 +6,8 @@ from models.genre import Genre
 from models.role import Roles
 from http import HTTPStatus
 from config.db import db
-from config.authn import jwt_required
-from config.authz import roles_required
+from config.authn import requires_authn
+from config.authz import requires_roles
 
 books_bp = Blueprint(name="books_bp", import_name=__name__, url_prefix="/api/v1/books")
 
@@ -21,8 +21,8 @@ def get_book(isbn):
 
 
 @books_bp.post("")
-@jwt_required
-@roles_required([Roles.ADMIN])
+@requires_authn
+@requires_roles([Roles.ADMIN])
 def create_book():
     book = book_schema.load(request.json)
     book.validate()
