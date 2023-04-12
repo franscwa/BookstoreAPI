@@ -1,13 +1,13 @@
+import os
 import pytest
 from app import create_app
 
 
 @pytest.fixture(scope="session")
 def app():
-    app = create_app()
-    app.config.update(
+    os.environ.update(
         {
-            "TESTING": True,
+            "TESTING": "True",
             "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         }
     )
