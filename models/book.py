@@ -20,9 +20,6 @@ class Book(db.Model):
     ratings = db.relationship("Rating", back_populates="book")
 
     comments = db.relationship("Comment", back_populates="book")
-    
-    wishlistid = db.Column(db.Integer, db.ForeignKey('wishlist.wishlistid'))
-
 
     def validate(self):
         assert self.isbn is not None and len(self.isbn) == 13, "isbn must be 13 digits"
@@ -50,10 +47,6 @@ class Book(db.Model):
         assert (
             self.genre_name is not None and len(self.genre_name) > 0
         ), "non-empty book genre name is required"
-        
-    @classmethod
-    def get_isbn(cls, id):
-        return cls.query.get_or_404(id)    
 
 
 class BookSchema(ma.SQLAlchemyAutoSchema):
