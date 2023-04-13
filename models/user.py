@@ -1,6 +1,7 @@
 from config.db import db
 from config.ma import ma
 from models.role import is_valid_role, get_roles
+from models.wishlist import Wishlist
 
 
 class User(db.Model):
@@ -12,6 +13,8 @@ class User(db.Model):
 
     role_name = db.Column(db.String, db.ForeignKey("role.name"), nullable=False)
     role = db.relationship("Role", back_populates="users")
+    
+
 
     def validate(self):
         assert (
@@ -29,6 +32,12 @@ class User(db.Model):
         assert self.role_name is not None and is_valid_role(
             self.role_name
         ), f"role_name must be one of {get_roles()}"
+        
+        wishlists = db.relationship('Wishlist', backref = 'user')
+        
+    @classmethod
+    def get_user(cls, id):
+        return cls.query.get_or_404(id)
 
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
