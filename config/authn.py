@@ -23,7 +23,7 @@ def requires_authn(func):
                 token, app_config["SECRET_KEY"], algorithms=["HS256"]
             )
             user_id = decoded_token["user_id"]
-            user = User.query.get(user_id)
+            user = User.query.filter_by(user_id=user_id).first()
             if user is None:
                 return "", HTTPStatus.UNAUTHORIZED
             g.user_id = user.user_id

@@ -115,6 +115,7 @@ def seed():
     
     db.session.add(user1)
 
+
     db.session.commit()
     print("db seeded")
 
