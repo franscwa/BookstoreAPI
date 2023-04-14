@@ -58,4 +58,3 @@ create_user('john', 'password', 'John Smith', 'john@example.com', '123 Main St')
 get_user('john')
 update_user('john2', 'email', 'john.smith@example.com')
 create_credit_card('john', {'number': '1234-5678-9012-3456', 'expiry': '12/24', 'cvv': '123'})
-
