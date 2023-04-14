@@ -1,6 +1,6 @@
 from config.db import db
 from config.ma import ma
-
+from models.wishlist import Wishlist
 
 class Book(db.Model):
     isbn = db.Column(db.String(13), primary_key=True)
@@ -22,7 +22,6 @@ class Book(db.Model):
     comments = db.relationship("Comment", back_populates="book")
     
     wishlistid = db.Column(db.Integer, db.ForeignKey('wishlist.wishlistid'))
-
 
     def validate(self):
         assert self.isbn is not None and len(self.isbn) == 13, "isbn must be 13 digits"
@@ -50,12 +49,16 @@ class Book(db.Model):
         assert (
             self.genre_name is not None and len(self.genre_name) > 0
         ), "non-empty book genre name is required"
-        
+
+
     @classmethod
-    def get_isbn(cls, id):
-        return cls.query.get_or_404(id)    
-
-
+    def get_all_books(cls):
+        return cls.query.all()
+    
+    @classmethod
+    def get_book(cls, id):
+        return cls.query.get_or_404(id)
+    
 class BookSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Book

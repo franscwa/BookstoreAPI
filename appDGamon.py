@@ -1,51 +1,95 @@
+# Creator: Daniel Gamon
+
+# (Create and activate virtual environment)
+# python -m venv env
+# env/bin/activate
+
+# (Install packages)
+# pip install -r requirements.txt
+
+# (Create .env file)
+# touch .env
+
+# (Set required environment variables in .env file)
+# FLASK_RUN_PORT = '5500'
+# FLASK_APP = 'appDGamon.py'
+# FLASK_DEBUG = 'True'
+# SECRET_KEY = 'some_secret_key'
+# SQLALCHEMY_TRACK_MODIFICATIONS = 'False'
+# SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:password@localhost/bookstore'
+
+# (Run tests)
+# pytest
+
+# (Run app db commands)
+# flask db migrate
+# flask db seed
+# flask db drop (Only use when feature is completely demoed as it wipes the database clean)
+
+# (start app)
+# python appDGamon.py (or run in appDGamon file)
+
+
+
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy 
 from sqlalchemy import Column, String, Integer, Float
 from flask_marshmallow import Marshmallow
 from marshmallow import Schema, fields
 from models import *
-from models.book import *
 from models.user import *
+from models.book import *
 from models.wishlist import *
-from models.wishlist_books import *
+from config.db import db
+from config.ma import ma
+from config.config import load_config
+from commands.db_cli import db_cli
+from blueprints.admin import admin_bp
+from blueprints.auth import auth_bp
+from blueprints.authors import authors_bp
+from blueprints.books import books_bp
+from blueprints.ratings import ratings_bp
+from blueprints.comments import comments_bp
+import jwt
 
 
 
 
-#run in Python interpretor
-#from app import db
-#db.create_all()
+app = Flask(import_name=__name__, static_folder=None)
 
-app = Flask(__name__)
+config = load_config()
+app.config.from_mapping(config)
+
+ma.init_app(app)
+db.init_app(app)
+
+app.cli.add_command(db_cli)
+
+app.register_blueprint(admin_bp)
+app.register_blueprint(auth_bp)
+app.register_blueprint(authors_bp)
+app.register_blueprint(books_bp)
+app.register_blueprint(ratings_bp)
+app.register_blueprint(comments_bp)
 
 app.app_context().push()
 
-app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql://postgres:password@localhost/bookstore'
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db = SQLAlchemy(app)
-
-ma = Marshmallow(app)
 
 
 
 
-
-
-
-
-@app.route('/api/v1/user/<int:userid>/wishlist', methods = ['POST'])
-def create_a_wishlist(userid):
+@app.route('/api/v1/user/<int:user_id>/wishlist', methods = ['POST'])
+def create_a_wishlist(user_id):
     
     data = request.get_json()
     
     user_data = request.get_json()
     
-    get_userid = user_data.get('userid')
+    get_user_id = user_data.get('user_id')
 
 
     new_wishlist = Wishlist(wishlist_name = data.get('wishlist_name'),
-                       user_id = data.get('userid') 
+                       user_id = data.get('user_id') 
     )
         
     new_wishlist.save()
@@ -93,7 +137,7 @@ def add_a_wishlist_book(userid, wishlistid):
     
     
     
-@app.route('/api/v1/user/<int:userid>/wishlist/<int:wishlistid>/book/<int:isbn>', methods = ['DELETE'])
+@app.route('/api/v1/user/<int:userid>/wishlist/<int:wishlistid>/book/<string:isbn>', methods = ['DELETE'])
 
 def delete_wishlist_book(userid, wishlistid, isbn):
     
@@ -150,6 +194,7 @@ def get_all_wishlist_books(userid, wishlistid):
     
         
 if __name__ == '__main__':
-    app.run(host = "0.0.0.0", port = app.config["FLASK_RUN_POST"])
+    app.run(host = "0.0.0.0", port = app.config["FLASK_RUN_PORT"])
+    
     
    

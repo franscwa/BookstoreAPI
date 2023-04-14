@@ -4,7 +4,7 @@ from functools import wraps
 from models.role import is_valid_role
 
 
-def roles_required(roles):
+def requires_roles(roles):
     def decorator(func):
         role_names = set([role.value for role in roles])
 

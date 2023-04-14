@@ -6,7 +6,7 @@ from models.user import User
 import jwt
 
 
-def jwt_required(func):
+def requires_authn(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
