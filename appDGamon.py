@@ -2,7 +2,7 @@
 
 # (Create and activate virtual environment)
 # python -m venv env
-# env/scrip/activate
+# env/scripts/activate
 
 # (Install packages)
 # pip install -r requirements.txt
