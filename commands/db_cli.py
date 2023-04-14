@@ -109,12 +109,11 @@ def seed():
     books = [book1, book2, book3, book4, book5]
     db.session.add_all(books)
     
-    user1 = User(first_name = 'Darryl', last_name = 'Marl', 
-                      email = 'dmar@gmail.com', password = 'dm123', role_name = 'USER')
+    #user1 = User(first_name = 'Darryl', last_name = 'Marl', 
+    #                  email = 'dmar@gmail.com', password = 'dm123', role_name = 'USER')
     # Mock user for Wishlist-Managament-Feature
     
-    db.session.add(user1)
-
+    #db.session.add(user1)
 
     db.session.commit()
     print("db seeded")

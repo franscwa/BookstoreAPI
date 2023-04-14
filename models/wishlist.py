@@ -46,3 +46,5 @@ class WishlistSchema(Schema):
     wishlistid = fields.Integer()    
     wishlist_name = fields.String()
     # Wishlist Schema
+    
+    
