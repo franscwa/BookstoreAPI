@@ -18,7 +18,6 @@
     touch .env
     ```
 5.  Set required environment variables in **.env** file
-
     ```
     FLASK_RUN_PORT='8080'
     FLASK_APP='app.py'
@@ -30,20 +29,23 @@
     SQLALCHEMY_DATABASE_URI='sqlite:///:memory:' # in-memory sqlite
     SQLALCHEMY_DATABASE_URI='postgresql://postgres:postgres@localhost:5432/bookstore' # postgresql
     ```
-
 6.  Run tests
     ```
     pytest
     ```
-7.  Run app db commands
+7.  If using postgresql, run the database server, install **psql**, and create a database
     ```
+    psql -c "CREATE DATABASE bookstore;"
+    ```
+8.  Run app db commands
+    ```
+    flask db drop
     flask db migrate
     flask db seed
-    flask db drop
     ```
-8.  Start app
+9.  Start app
     ```
-    python3 app.py
+    flask run
     ```
 
 ## Tutorial

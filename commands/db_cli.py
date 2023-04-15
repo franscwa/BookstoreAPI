@@ -5,8 +5,9 @@ from models.book import Book
 from models.user import User
 from models.genre import Genre
 from models.role import Role, Roles
+from models.user import User
 from models.wishlist import Wishlist
-
+from werkzeug.security import generate_password_hash
 
 
 db_cli = AppGroup(name="db")
@@ -35,6 +36,15 @@ def seed():
     roles = [role1, role2]
     db.session.add_all(roles)
     db.session.commit()
+
+    admin = User(
+        first_name="Admin",
+        last_name="User",
+        email="admin@example.com",
+        password=generate_password_hash("password"),
+        role_name=Roles.ADMIN.value,
+    )
+    db.session.add(admin)
 
     genre1 = Genre(name="Fantasy")
     genre2 = Genre(name="Adventure")
@@ -108,11 +118,16 @@ def seed():
     )
     books = [book1, book2, book3, book4, book5]
     db.session.add_all(books)
-    
-    user1 = User(first_name = 'Darryl', last_name = 'Marl', 
-                      email = 'dmar@gmail.com', password = 'dm123', role_name = 'USER')
-     # Mock user for Wishlist-Managament-Feature
-    
+
+    user1 = User(
+        first_name="Darryl",
+        last_name="Marl",
+        email="dmar@gmail.com",
+        password="dm123",
+        role_name="USER",
+    )
+    # Mock user for Wishlist-Managament-Feature
+
     db.session.add(user1)
 
     db.session.commit()
