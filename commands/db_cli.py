@@ -44,7 +44,15 @@ def seed():
         password=generate_password_hash("password"),
         role_name=Roles.ADMIN.value,
     )
-    db.session.add(admin)
+    user = User(
+        first_name="Regular",
+        last_name="User",
+        email="user@example.com",
+        password=generate_password_hash("password"),
+        role_name=Roles.USER.value,
+    )
+    users = [admin, user]
+    db.session.add_all(users)
 
     genre1 = Genre(name="Fantasy")
     genre2 = Genre(name="Adventure")
