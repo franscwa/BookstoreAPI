@@ -191,10 +191,9 @@ def get_all_wishlist_books(userid, wishlistid):
  
     
     
-    
         
 if __name__ == '__main__':
-    app.run(host = "0.0.0.0", port = app.config["FLASK_RUN_PORT"])
+    app.run(host = "0.0.0.0", port = 80)
     
     
    
